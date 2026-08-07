@@ -1,0 +1,109 @@
+{
+  "name": "@kdrdev/echo-markdown-editor",
+  "version": "0.1.0",
+  "description": "A WYSIWYG markdown editor component for Vue 3, built on Tiptap. You type on a rendered surface; v-model gives you markdown.",
+  "keywords": [
+    "vue",
+    "vue3",
+    "markdown",
+    "editor",
+    "wysiwyg",
+    "tiptap",
+    "prosemirror",
+    "component"
+  ],
+  "license": "MIT",
+  "author": "kdrdev",
+  "homepage": "https://kadirtikil.github.io/echo-markdown-editor/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kadirtikil/echo-markdown-editor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kadirtikil/echo-markdown-editor/issues"
+  },
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/markdown-editor.js",
+  "module": "./dist/markdown-editor.js",
+  "types": "./dist/types/components/MarkdownEditor/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/components/MarkdownEditor/index.d.ts",
+      "import": "./dist/markdown-editor.js"
+    },
+    "./style.css": "./dist/style.css",
+    "./package.json": "./package.json"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "build:lib": "vite build --config vite.lib.config.ts",
+    "build:types": "vue-tsc -p tsconfig.lib.json && node scripts/finalize-types.mjs",
+    "build:package": "pnpm run build:lib && pnpm run build:types",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:perf": "vitest run --config vitest.perf.config.ts --disable-console-intercept",
+    "test:all": "pnpm run test && pnpm run test:perf",
+    "type-check": "vue-tsc --noEmit -p tsconfig.app.json",
+    "prepublishOnly": "pnpm run type-check && pnpm run test && pnpm run build:package"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  },
+  "dependencies": {
+    "@floating-ui/dom": "^1.8.0",
+    "@types/markdown-it": "^14.1.2",
+    "@tiptap/core": "^3.29.2",
+    "@tiptap/extension-character-count": "^3.29.2",
+    "@tiptap/extension-code-block-lowlight": "^3.29.2",
+    "@tiptap/extension-emoji": "^3.29.2",
+    "@tiptap/extension-highlight": "^3.29.2",
+    "@tiptap/extension-image": "^3.29.2",
+    "@tiptap/extension-list": "^3.29.2",
+    "@tiptap/extension-mathematics": "^3.29.2",
+    "@tiptap/extension-placeholder": "^3.29.2",
+    "@tiptap/extension-subscript": "^3.29.2",
+    "@tiptap/extension-superscript": "^3.29.2",
+    "@tiptap/extension-table": "^3.29.2",
+    "@tiptap/extension-text-align": "^3.29.2",
+    "@tiptap/extension-typography": "^3.29.2",
+    "@tiptap/pm": "^3.29.2",
+    "@tiptap/starter-kit": "^3.29.2",
+    "@tiptap/suggestion": "^3.29.2",
+    "@tiptap/vue-3": "^3.29.2",
+    "dompurify": "^3.4.12",
+    "highlight.js": "^11.11.1",
+    "katex": "^0.17.0",
+    "lowlight": "^3.3.0",
+    "lucide-vue-next": "^1.0.0",
+    "mermaid": "^11.16.0",
+    "tiptap-markdown": "^0.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "@vue/test-utils": "^2.4.11",
+    "@vue/tsconfig": "^0.9.1",
+    "jsdom": "^30.0.1",
+    "markdown-it": "^14.3.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.2.0",
+    "vitest": "^4.1.10",
+    "vue": "^3.5.40",
+    "vue-tsc": "^3.3.8"
+  },
+  "packageManager": "pnpm@11.5.0",
+  "engines": {
+    "node": ">=20"
+  }
+}

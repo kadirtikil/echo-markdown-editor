@@ -1,0 +1,872 @@
+/* ==========================================================================
+   MarkdownEditor — all styles are scoped under .me-root so the component can
+   be dropped into any app without leaking. Theming goes through the custom
+   properties below; `.me-root.dark` overrides them.
+   ========================================================================== */
+
+.me-root {
+  --me-bg: #ffffff;
+  --me-bg-subtle: #f6f8fa;
+  --me-bg-inset: #eef1f4;
+  --me-border: #d8dee4;
+  --me-text: #1f2328;
+  --me-text-muted: #656d76;
+  --me-accent: #0969da;
+  --me-accent-soft: rgba(9, 105, 218, 0.12);
+  --me-danger: #cf222e;
+  --me-highlight: #fff3c4;
+  --me-radius: 8px;
+  --me-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  background: var(--me-bg);
+  color: var(--me-text);
+  border: 1px solid var(--me-border);
+  border-radius: var(--me-radius);
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.me-root.dark {
+  --me-bg: #0d1117;
+  --me-bg-subtle: #161b22;
+  --me-bg-inset: #1c2128;
+  --me-border: #30363d;
+  --me-text: #e6edf3;
+  --me-text-muted: #8b949e;
+  --me-accent: #4493f8;
+  --me-accent-soft: rgba(68, 147, 248, 0.18);
+  --me-danger: #f85149;
+  --me-highlight: #57451a;
+  color-scheme: dark;
+}
+
+.me-root.is-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  border-radius: 0;
+  border: none;
+  height: 100vh;
+}
+
+/* ---------- toolbar ---------- */
+
+.me-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 6px 8px;
+  background: var(--me-bg-subtle);
+  border-bottom: 1px solid var(--me-border);
+}
+
+.me-toolbar__group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding-right: 6px;
+  margin-right: 4px;
+  border-right: 1px solid var(--me-border);
+}
+
+.me-toolbar__group:last-of-type {
+  border-right: none;
+  margin-right: 0;
+  padding-right: 0;
+}
+
+.me-toolbar__spacer {
+  flex: 1 1 auto;
+}
+
+.me-toolbar button,
+.me-bubble button,
+.me-find button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--me-text);
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.me-toolbar button:hover:not(:disabled),
+.me-bubble button:hover,
+.me-find button:hover {
+  background: var(--me-bg-inset);
+}
+
+.me-toolbar button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.me-toolbar button.is-active,
+.me-bubble button.is-active,
+.me-find button.is-active {
+  background: var(--me-accent-soft);
+  color: var(--me-accent);
+}
+
+.me-toolbar__select {
+  height: 28px;
+  padding: 0 6px;
+  border: 1px solid var(--me-border);
+  border-radius: 6px;
+  background: var(--me-bg);
+  color: var(--me-text);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* ---------- find & replace ---------- */
+
+.me-find {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  background: var(--me-bg-subtle);
+  border-bottom: 1px solid var(--me-border);
+}
+
+.me-find__row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.me-find__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--me-border);
+  border-radius: 6px;
+  background: var(--me-bg);
+  color: var(--me-text);
+  font-size: 13px;
+}
+
+.me-find__input:focus {
+  outline: 2px solid var(--me-accent);
+  outline-offset: -1px;
+}
+
+.me-find__count {
+  min-width: 72px;
+  font-size: 12px;
+  color: var(--me-text-muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.me-find__text-btn {
+  width: auto !important;
+  padding: 0 10px;
+  font-size: 12px;
+  border: 1px solid var(--me-border) !important;
+}
+
+.me-search-match {
+  background: var(--me-highlight);
+  border-radius: 2px;
+}
+
+.me-search-match--current {
+  background: #f0a020;
+  color: #1f2328;
+}
+
+/* ---------- layout ---------- */
+
+.me-body {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.me-panes {
+  display: grid;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+.me-panes--wysiwyg,
+.me-panes--source {
+  grid-template-columns: 1fr;
+}
+
+.me-pane {
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  position: relative;
+}
+
+.me-resizer {
+  cursor: col-resize;
+  background: var(--me-border);
+  transition: background 0.12s ease;
+}
+
+.me-resizer:hover {
+  background: var(--me-accent);
+}
+
+.me-source {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  border: none;
+  resize: none;
+  background: var(--me-bg-subtle);
+  color: var(--me-text);
+  font-family: var(--me-mono);
+  font-size: 13px;
+  line-height: 1.7;
+  tab-size: 2;
+}
+
+.me-source:focus {
+  outline: none;
+}
+
+/* ---------- outline ---------- */
+
+.me-outline {
+  flex: 0 0 220px;
+  overflow-y: auto;
+  padding: 12px 8px;
+  background: var(--me-bg-subtle);
+  border-right: 1px solid var(--me-border);
+}
+
+.me-outline__title {
+  padding: 0 10px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--me-text-muted);
+}
+
+.me-outline__empty {
+  padding: 0 10px;
+  margin: 0;
+  font-size: 12px;
+  color: var(--me-text-muted);
+}
+
+.me-outline__item {
+  display: block;
+  width: 100%;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--me-text-muted);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.me-outline__item:hover {
+  background: var(--me-bg-inset);
+  color: var(--me-text);
+}
+
+.me-outline__item.is-active {
+  background: var(--me-accent-soft);
+  color: var(--me-accent);
+  font-weight: 500;
+}
+
+/* ---------- status bar ---------- */
+
+.me-status {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 12px;
+  background: var(--me-bg-subtle);
+  border-top: 1px solid var(--me-border);
+  font-size: 12px;
+  color: var(--me-text-muted);
+}
+
+.me-status__spacer {
+  flex: 1 1 auto;
+}
+
+.me-status__save {
+  color: var(--me-accent);
+}
+
+.me-status button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border: 1px solid var(--me-border);
+  border-radius: 6px;
+  background: var(--me-bg);
+  color: var(--me-text-muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.me-status button:hover {
+  color: var(--me-text);
+  border-color: var(--me-accent);
+}
+
+/* ---------- bubble & slash menus ---------- */
+
+.me-bubble {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  background: var(--me-bg);
+  border: 1px solid var(--me-border);
+  border-radius: 8px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.14);
+}
+
+.me-slash {
+  width: 300px;
+  max-height: 340px;
+  overflow-y: auto;
+  padding: 6px;
+  background: #fff;
+  border: 1px solid #d8dee4;
+  border-radius: 10px;
+  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.16);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* The slash menu is portalled to <body>, so it can't inherit .me-root vars. */
+.dark .me-slash,
+html.dark .me-slash {
+  background: #161b22;
+  border-color: #30363d;
+  color: #e6edf3;
+}
+
+.me-slash__group {
+  padding: 8px 10px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #656d76;
+}
+
+.me-slash__empty {
+  padding: 14px 10px;
+  font-size: 13px;
+  color: #656d76;
+}
+
+.me-slash__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 10px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.me-slash__item.is-active {
+  background: rgba(9, 105, 218, 0.12);
+}
+
+.me-slash__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  border: 1px solid #d8dee4;
+  border-radius: 6px;
+  background: #f6f8fa;
+}
+
+.dark .me-slash__icon,
+html.dark .me-slash__icon {
+  background: #21262d;
+  border-color: #30363d;
+}
+
+.me-slash__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.me-slash__text strong {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.me-slash__text small {
+  font-size: 11px;
+  color: #656d76;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- the document itself ---------- */
+
+.me-prose {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 32px 28px 40vh;
+  font-size: 16px;
+  line-height: 1.7;
+  outline: none;
+}
+
+.me-prose > * + * {
+  margin-top: 0.9em;
+}
+
+.me-prose h1,
+.me-prose h2,
+.me-prose h3,
+.me-prose h4,
+.me-prose h5,
+.me-prose h6 {
+  margin-top: 1.6em;
+  margin-bottom: 0.4em;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.me-prose h1 {
+  font-size: 2em;
+  padding-bottom: 0.25em;
+  border-bottom: 1px solid var(--me-border);
+}
+.me-prose h2 {
+  font-size: 1.5em;
+  padding-bottom: 0.25em;
+  border-bottom: 1px solid var(--me-border);
+}
+.me-prose h3 {
+  font-size: 1.25em;
+}
+.me-prose h4 {
+  font-size: 1em;
+}
+.me-prose h5 {
+  font-size: 0.9em;
+}
+.me-prose h6 {
+  font-size: 0.85em;
+  color: var(--me-text-muted);
+}
+
+.me-prose a {
+  color: var(--me-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.me-prose blockquote {
+  margin-left: 0;
+  padding: 0.2em 0 0.2em 1em;
+  border-left: 3px solid var(--me-border);
+  color: var(--me-text-muted);
+}
+
+.me-prose ul,
+.me-prose ol {
+  padding-left: 1.5em;
+}
+
+.me-prose li > p {
+  margin: 0;
+}
+
+.me-prose code {
+  padding: 0.15em 0.35em;
+  border-radius: 4px;
+  background: var(--me-bg-inset);
+  font-family: var(--me-mono);
+  font-size: 0.875em;
+}
+
+.me-prose pre {
+  padding: 14px 16px;
+  border-radius: var(--me-radius);
+  background: var(--me-bg-inset);
+  overflow-x: auto;
+}
+
+.me-prose pre code {
+  padding: 0;
+  background: none;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.me-prose hr {
+  border: none;
+  border-top: 1px solid var(--me-border);
+  margin: 1.8em 0;
+}
+
+.me-prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--me-radius);
+}
+
+.me-prose img.ProseMirror-selectednode {
+  outline: 2px solid var(--me-accent);
+}
+
+/* tables */
+
+.me-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  overflow: hidden;
+}
+
+.me-prose th,
+.me-prose td {
+  position: relative;
+  padding: 7px 10px;
+  border: 1px solid var(--me-border);
+  vertical-align: top;
+}
+
+.me-prose th {
+  background: var(--me-bg-subtle);
+  font-weight: 600;
+  text-align: left;
+}
+
+.me-prose .selectedCell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--me-accent-soft);
+  pointer-events: none;
+}
+
+.me-prose .column-resize-handle {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--me-accent);
+  cursor: col-resize;
+}
+
+/* task lists */
+
+.me-prose ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0.2em;
+}
+
+.me-prose ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.me-prose ul[data-type="taskList"] li > label {
+  flex: 0 0 auto;
+  margin-top: 0.35em;
+  user-select: none;
+}
+
+.me-prose ul[data-type="taskList"] li > div {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Syntax highlighting.
+   `highlight.js/styles/github.css` is imported for the light theme; these
+   override the token colours with GitHub's dark palette, since a stylesheet
+   import cannot be scoped to a theme class. */
+
+.me-root.dark .hljs-doctag,
+.me-root.dark .hljs-keyword,
+.me-root.dark .hljs-meta .hljs-keyword,
+.me-root.dark .hljs-template-tag,
+.me-root.dark .hljs-template-variable,
+.me-root.dark .hljs-type,
+.me-root.dark .hljs-variable.language_ {
+  color: #ff7b72;
+}
+
+.me-root.dark .hljs-title,
+.me-root.dark .hljs-title.class_,
+.me-root.dark .hljs-title.class_.inherited__,
+.me-root.dark .hljs-title.function_ {
+  color: #d2a8ff;
+}
+
+.me-root.dark .hljs-attr,
+.me-root.dark .hljs-attribute,
+.me-root.dark .hljs-literal,
+.me-root.dark .hljs-meta,
+.me-root.dark .hljs-number,
+.me-root.dark .hljs-operator,
+.me-root.dark .hljs-selector-attr,
+.me-root.dark .hljs-selector-class,
+.me-root.dark .hljs-selector-id,
+.me-root.dark .hljs-variable {
+  color: #79c0ff;
+}
+
+.me-root.dark .hljs-meta .hljs-string,
+.me-root.dark .hljs-regexp,
+.me-root.dark .hljs-string {
+  color: #a5d6ff;
+}
+
+.me-root.dark .hljs-built_in,
+.me-root.dark .hljs-symbol {
+  color: #ffa657;
+}
+
+.me-root.dark .hljs-code,
+.me-root.dark .hljs-comment,
+.me-root.dark .hljs-formula {
+  color: #8b949e;
+}
+
+.me-root.dark .hljs-name,
+.me-root.dark .hljs-quote,
+.me-root.dark .hljs-selector-pseudo,
+.me-root.dark .hljs-selector-tag {
+  color: #7ee787;
+}
+
+.me-root.dark .hljs-subst {
+  color: #c9d1d9;
+}
+
+.me-root.dark .hljs-section {
+  color: #1f6feb;
+  font-weight: 600;
+}
+
+.me-root.dark .hljs-bullet {
+  color: #f2cc60;
+}
+
+.me-root.dark .hljs-addition {
+  color: #aff5b4;
+  background-color: #033a16;
+}
+
+.me-root.dark .hljs-deletion {
+  color: #ffdcd7;
+  background-color: #67060c;
+}
+
+/* marks */
+
+.me-prose mark {
+  padding: 0.1em 0.2em;
+  border-radius: 3px;
+  background: var(--me-highlight);
+  color: inherit;
+}
+
+/* math */
+
+.me-prose .tiptap-mathematics-render {
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0 2px;
+}
+
+.me-prose .tiptap-mathematics-render:hover {
+  background: var(--me-accent-soft);
+}
+
+.me-prose [data-type="block-math"] {
+  margin: 1.2em 0;
+  text-align: center;
+  overflow-x: auto;
+}
+
+/* placeholder */
+
+.me-prose p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  color: var(--me-text-muted);
+}
+
+/* emoji */
+
+.me-prose [data-type="emoji"] img {
+  display: inline-block;
+  width: 1.15em;
+  height: 1.15em;
+  vertical-align: -0.2em;
+}
+
+/* gapcursor / dropcursor */
+
+.me-prose .ProseMirror-gapcursor::after {
+  border-top-color: var(--me-text);
+}
+
+/* ---------- mermaid node ---------- */
+
+.me-mermaid {
+  position: relative;
+  margin: 1.2em 0;
+  border: 1px solid var(--me-border);
+  border-radius: var(--me-radius);
+  background: var(--me-bg-subtle);
+  overflow: hidden;
+}
+
+.me-mermaid.is-selected {
+  outline: 2px solid var(--me-accent);
+}
+
+.me-mermaid__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--me-border);
+}
+
+.me-mermaid__label {
+  flex: 1 1 auto;
+  font-family: var(--me-mono);
+  font-size: 11px;
+  color: var(--me-text-muted);
+}
+
+.me-mermaid__toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--me-text-muted);
+  cursor: pointer;
+}
+
+.me-mermaid__toolbar button:hover {
+  background: var(--me-bg-inset);
+  color: var(--me-text);
+}
+
+.me-mermaid__source {
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  resize: vertical;
+  background: transparent;
+  color: var(--me-text);
+  font-family: var(--me-mono);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.me-mermaid__source:focus {
+  outline: none;
+}
+
+.me-mermaid__canvas {
+  padding: 16px;
+  text-align: center;
+}
+
+.me-mermaid__svg svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.me-mermaid__loading {
+  font-size: 13px;
+  color: var(--me-text-muted);
+}
+
+.me-mermaid__error {
+  display: flex;
+  gap: 10px;
+  text-align: left;
+  color: var(--me-danger);
+  font-size: 13px;
+}
+
+.me-mermaid__error pre {
+  margin: 4px 0 0;
+  white-space: pre-wrap;
+  font-family: var(--me-mono);
+  font-size: 12px;
+}
+
+/* ---------- print / PDF ---------- */
+
+@media print {
+  .me-toolbar,
+  .me-find,
+  .me-outline,
+  .me-status,
+  .me-resizer,
+  .me-pane--source,
+  .me-mermaid__toolbar {
+    display: none !important;
+  }
+
+  .me-root {
+    border: none;
+    height: auto;
+  }
+
+  .me-pane {
+    overflow: visible;
+  }
+
+  .me-prose {
+    max-width: none;
+    padding: 0;
+  }
+}

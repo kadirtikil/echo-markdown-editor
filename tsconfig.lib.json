@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.lib.tsbuildinfo",
+    "composite": false,
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationDir": "./dist/types",
+    "rootDir": "./src"
+  },
+  "include": ["src/components/MarkdownEditor/**/*.ts", "src/components/MarkdownEditor/**/*.vue", "src/types/**/*.d.ts"],
+  "exclude": ["src/components/MarkdownEditor/**/*.test.ts", "src/components/MarkdownEditor/__perf__/**"]
+}
